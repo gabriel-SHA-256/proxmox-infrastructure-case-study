@@ -2,152 +2,125 @@
 
 ## Overview
 
-This project documents a self-hosted virtualization environment built with Proxmox VE.
+This project documents a self-hosted virtualization environment built with **Proxmox VE**.
 
-The environment is used for virtual machine administration, Linux server workloads, networking, storage management, GPU passthrough, service deployment, and infrastructure troubleshooting.
+The lab is used for virtual machine administration, Linux server workloads, storage services, networking, infrastructure testing, and troubleshooting.
+
+The environment was designed to provide hands-on experience with virtualization and the integration between hypervisor, virtual machines, storage, and network services.
 
 ## Architecture
 
 ```text
-Physical Server
-│
-└── Proxmox VE
-    │
-    ├── Virtual Networking
-    │
-    ├── Storage
-    │
-    └── Virtual Machines
+Network / Internet
         │
-        └── Ubuntu Server
-            ├── Linux services
-            ├── SSH administration
-            ├── systemd services
-            └── NVIDIA GPU passthrough
+        │
+     pfSense
+        │
+        │
+   Local Network
+        │
+        │
+┌─────────────────────┐
+│   Proxmox VE Host   │
+│                     │
+│  Virtual Networking │
+│        │            │
+│        ├── VM       │
+│        ├── VM       │
+│        ├── TrueNAS  │
+│        └── Linux    │
+│            Servers  │
+│                     │
+│      Storage        │
+└─────────────────────┘
 ```
 
 ## Proxmox VE Host
 
-The physical host runs **Proxmox VE** as the virtualization platform.
+The physical server runs **Proxmox VE** as the main virtualization platform.
 
-Main administration tasks include:
+The host is responsible for:
 
-- Virtual machine creation and management
+- Virtual machine lifecycle management
 - CPU and memory allocation
+- Virtual disk management
 - Virtual networking
-- Storage management
-- VM disk management
-- PCIe device passthrough
+- Storage allocation
 - VM console access
-- Infrastructure troubleshooting
+- Resource monitoring
 
 ## Virtual Machines
 
-Linux virtual machines are deployed and administered through Proxmox VE.
+Multiple virtual machines can be deployed according to the requirements of each workload.
 
-Tasks include:
+Examples used in the lab include:
 
-- VM provisioning
-- CPU and RAM configuration
-- Virtual disk configuration
-- Network interface configuration
-- Linux installation
-- SSH remote administration
-- Service management
-- Resource monitoring
-- Troubleshooting
+- Linux server virtual machines
+- Infrastructure service workloads
+- TrueNAS
+- Test and lab environments
 
-## GPU Passthrough
+Each VM receives its own virtual hardware configuration, including CPU, memory, storage, and network interfaces.
 
-An Ubuntu Server virtual machine uses **PCIe passthrough** to access an NVIDIA GPU directly.
+## Virtual Networking
 
-The configuration includes:
+Proxmox VE virtual networking connects the virtual machines to the physical network infrastructure.
 
-- PCIe device identification
-- IOMMU configuration
-- Proxmox PCI passthrough
-- NVIDIA driver installation inside the VM
-- CUDA configuration
-- GPU validation
-
-Example validation:
-
-```bash
-nvidia-smi
-```
-
-## Networking
-
-Virtual machines use Proxmox virtual networking to communicate with the local network.
-
-Administration and troubleshooting include:
+The environment has been used with:
 
 - Linux bridges
 - Virtual network interfaces
-- TCP/IP configuration
-- Routing validation
-- SSH connectivity
-- Network troubleshooting
+- TCP/IP networking
+- VLAN-based network segmentation
+- pfSense routing and firewall services
 
-Useful commands:
-
-```bash
-ip addr
-ip route
-ping <destination>
-ss -tulpn
-```
+Detailed network configuration is documented separately in `networking.md`.
 
 ## Storage
 
-Storage administration includes:
+Storage is allocated and managed through Proxmox VE according to the requirements of each virtual machine.
+
+The environment includes experience with:
 
 - Virtual disk allocation
-- Storage capacity monitoring
-- VM disk expansion
-- Linux filesystem expansion
-- Storage troubleshooting
+- VM storage management
+- Disk capacity adjustments
+- Storage-oriented virtual machines such as TrueNAS
 
-Useful commands:
+Storage and backup procedures are documented separately in `storage-backup.md`.
 
-```bash
-lsblk
-df -h
-```
+## Administration
 
-## Troubleshooting
+The environment is administered through the Proxmox VE management interface and guest operating system administration tools.
 
-Common troubleshooting tasks in this environment include:
+Typical activities include:
 
-- Checking VM resource utilization
-- Diagnosing Linux services
-- Troubleshooting network connectivity
-- Expanding virtual disks
-- Validating PCIe GPU passthrough
-- Reviewing system logs
-- Managing systemd services
+- Creating and removing virtual machines
+- Adjusting CPU and memory
+- Managing virtual disks
+- Configuring virtual network interfaces
+- Accessing VM consoles
+- Monitoring resource utilization
+- Troubleshooting infrastructure issues
 
-Useful commands:
+## Security & Administrative Access
 
-```bash
-systemctl status <service>
-journalctl -u <service>
-free -h
-df -h
-lsblk
-ip addr
-ip route
-```
+Administrative access to the Proxmox VE environment follows basic separation and access-control practices.
 
-## Security
+The lab has included:
 
-Sensitive information is intentionally excluded from this public repository.
+- Two-factor authentication (2FA) for Proxmox VE administrative access
+- Restricted use of the root account for routine administration
+- Local console access for administrative recovery
+- Separation between the Proxmox VE hypervisor and workloads running inside virtual machines
+- Authenticated SSH access for remote administration of Linux guests
 
-The documentation does not contain:
+Security-specific configuration and hardening are documented separately from the general architecture.
 
-- Passwords
-- Authentication tokens
-- SSH private keys
-- Public IP addresses
-- Internal credentials
-- Sensitive host configuration
+## Documentation
+
+This repository separates the main infrastructure topics into dedicated documents:
+
+- [`vm-provisioning.md`](vm-provisioning.md) — Virtual machine creation and provisioning
+- `networking.md` — Virtual networking, VLANs, routing, and connectivity
+- `storage-backup.md` — Storage management and backup workflows
