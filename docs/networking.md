@@ -1,119 +1,109 @@
-# Proxmox VE Networking
+# Proxmox VE Virtual Networking
 
 ## Overview
 
-This document describes the network architecture and configuration used in my **Proxmox VE infrastructure lab**.
+This document describes the **virtual networking layer of a production Proxmox VE environment** that I implemented and currently administer.
 
-The environment integrates Proxmox VE with **pfSense, VLAN segmentation, a managed switch, virtual networking, routing, firewall rules, and DNS services**.
+The Proxmox VE host provides network connectivity for virtual machines and LXC containers through Linux bridges, virtual network interfaces, and VLAN integration.
+
+The broader corporate network, routing, firewalling, and external network security infrastructure are intentionally outside the scope of this repository.
 
 ## Network Architecture
 
 ```text
-Internet
-   │
-   ▼
-pfSense
-   │
-   ├── LAN
-   │
-   └── VLAN
-         │
-         ▼
-   Managed Switch
-         │
-         ▼
-   Proxmox VE Host
-         │
-         ├── Virtual Machines
-         └── Infrastructure Services
+        External Network Infrastructure
+                    │
+                    │
+          Physical Network Interface
+                    │
+                    ▼
+         ┌─────────────────────┐
+         │   Proxmox VE Host   │
+         │                     │
+         │   Linux Bridges     │
+         │         │           │
+         │   VLAN Interfaces   │
+         │         │           │
+         │   ┌─────┴─────┐     │
+         │   │           │     │
+         │  VMs      LXC Containers
+         │                     │
+         └─────────────────────┘
 ```
 
-## Proxmox Virtual Networking
+This diagram intentionally represents only the Proxmox VE networking layer and its connection to the external network infrastructure.
 
-Proxmox VE virtual networking is used to connect virtual machines to the physical network infrastructure.
+## Linux Bridges
 
-The environment includes:
+Linux bridges are used to connect virtual workloads to the physical network.
 
-- Linux bridges
-- Virtual network interfaces
-- VLAN-aware networking
-- Connectivity between virtual machines and external network services
-- Integration between the Proxmox host and the managed network infrastructure
+They provide the network layer between:
 
-Virtual machines can be connected to different network segments depending on the requirements of each workload.
+**Physical interface → Proxmox VE → Virtual Machine / LXC Container**
 
-## VLAN Segmentation
+Bridge configuration is managed according to the connectivity requirements of the workloads hosted on the Proxmox VE server.
 
-The lab uses VLANs to separate infrastructure traffic into dedicated network segments.
+## Virtual Network Interfaces
 
-The implementation involved:
+Virtual machines and LXC containers receive virtual network interfaces connected to the appropriate Proxmox VE networking configuration.
 
-- VLAN configuration on pfSense
-- VLAN tagging through a managed switch
-- VLAN configuration on the Proxmox VE host
-- Virtual interfaces associated with the VLAN
-- Routing and firewall control through pfSense
+Administration includes:
 
-This environment was also used to troubleshoot VLAN connectivity between Proxmox VE and pfSense.
+- Virtual network interface assignment
+- Bridge association
+- Workload-specific network connectivity
+- Interface changes during VM or container lifecycle management
+- Troubleshooting connectivity between virtual workloads and the external network
 
-One troubleshooting case involved correcting the VLAN interface configuration on the Proxmox host and validating that tagged traffic was successfully reaching pfSense.
+## VLAN Integration
 
-## pfSense Integration
+The production environment uses VLAN segmentation, with VLAN connectivity integrated into the Proxmox VE networking layer.
 
-pfSense operates as the firewall and routing platform for the lab network.
+Proxmox-side configuration includes:
 
-Its responsibilities include:
+- VLAN interfaces
+- VLAN-aware virtual networking
+- Association between VLAN connectivity and virtual workloads
+- Integration between the hypervisor networking layer and the external segmented network
 
-- Routing between network segments
-- VLAN gateway configuration
-- Firewall rule management
-- Network access control
-- DNS integration
-- Connectivity between infrastructure services
+VLAN routing and network security policy are handled outside Proxmox VE.
 
-The integration with Proxmox VE allows virtual workloads to use the same segmented network architecture as physical devices.
+## Network Segmentation
 
-## Managed Switch
+Virtual workloads can be connected to different network segments according to their infrastructure requirements.
 
-A managed switch is used to transport VLAN traffic between pfSense and the Proxmox VE host.
+This allows the virtualization layer to support segmented connectivity without requiring all virtual machines and containers to share the same network context.
 
-The switch configuration includes tagged VLAN traffic on the links involved in the virtualized infrastructure.
+The Proxmox VE host is responsible for providing the appropriate virtual network path, while external infrastructure controls routing and communication between network segments.
 
-This provides end-to-end VLAN connectivity across:
+## Production Troubleshooting
 
-**pfSense → Managed Switch → Proxmox VE → Virtual Workloads**
+Networking work in this environment has included troubleshooting issues across the Proxmox VE virtual networking layer.
 
-## DNS Services
+One production troubleshooting case involved an incorrect **VLAN interface configuration on the Proxmox VE host**.
 
-The lab also includes **Pi-hole** integrated with the network infrastructure for DNS services.
+The issue was isolated to the Proxmox networking layer, the VLAN interface configuration was corrected, and tagged traffic between the host and the external network infrastructure was successfully restored.
 
-DNS traffic is coordinated with pfSense, providing centralized DNS configuration for devices and virtual workloads in the environment.
+Other Proxmox-side networking troubleshooting includes:
 
-## Network Validation
+- Virtual interface configuration
+- Linux bridge configuration
+- VLAN connectivity
+- Workload network attachment
+- Connectivity between virtual workloads and external infrastructure
 
-After network changes, connectivity is validated across the complete path rather than only at the virtual machine level.
+## Administrative Scope
 
-Validation includes:
+Networking administration documented in this repository is limited to the **Proxmox VE virtualization layer**.
 
-- VLAN membership
-- Tagged traffic between devices
-- Proxmox virtual interface configuration
-- Gateway reachability
-- Routing between required networks
-- Firewall behavior
-- DNS resolution
-- Connectivity between virtual workloads and infrastructure services
+The following are intentionally outside the scope of this case study:
 
-## Troubleshooting
+- Corporate firewall configuration
+- External routing configuration
+- Complete VLAN topology
+- DNS architecture
+- Physical network topology
+- Remote-access infrastructure
+- Firewall policies and rules
 
-Hands-on troubleshooting in this environment has included:
-
-- Incorrect VLAN interface configuration
-- VLAN tagging problems
-- Proxmox virtual networking issues
-- Connectivity between Proxmox VE and pfSense
-- Routing and gateway problems
-- Firewall rule validation
-- DNS connectivity and resolution
-
-The troubleshooting process follows the network path layer by layer, from the virtual workload through Proxmox VE, the managed switch, and pfSense.
+This separation keeps the case study focused on the networking responsibilities directly associated with Proxmox VE.
