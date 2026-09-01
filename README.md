@@ -1,99 +1,71 @@
 # Proxmox VE Infrastructure Case Study
 
-Sanitized case study based on a **production Proxmox VE environment** that I implemented and currently administer as part of a business IT infrastructure.
+> This repository is a sanitized case study based on a **production Proxmox VE environment** that I implemented and currently administer. Company-specific identifiers, network addressing, credentials, hostnames, and sensitive configuration details have been removed or anonymized.
 
-The environment hosts virtual machines and LXC containers supporting infrastructure and business workloads, with dedicated compute resources, virtual networking, storage management, administrative access controls, and integration with the external network infrastructure.
+## Overview
 
-This repository focuses specifically on the **Proxmox VE virtualization layer**. Company-specific identifiers, network addressing, hostnames, credentials, and sensitive configuration details have been removed or anonymized.
+The environment uses **Proxmox VE** as the virtualization platform for production virtual machines and LXC containers supporting business and infrastructure workloads.
 
-## Areas Covered
+My responsibilities cover workload provisioning, resource management, virtual networking, storage administration, access control, monitoring, and infrastructure troubleshooting.
 
-- Proxmox VE administration
-- Virtual machine provisioning and lifecycle management
-- LXC container administration
-- CPU and memory resource allocation
-- Virtual disk and storage management
-- Linux bridges and virtual networking
-- VLAN integration
-- Linux server workloads
-- Infrastructure service hosting
-- Administrative access control
-- Two-factor authentication
-- Resource monitoring
-- Infrastructure troubleshooting
+## Tech Stack
 
-## Architecture
+- Proxmox VE
+- Linux
+- Virtual Machines
+- LXC Containers
+- Linux Bridges
+- VLANs
+- Virtual Networking
+- Virtual Storage
+- Two-Factor Authentication (2FA)
 
-Proxmox VE provides the virtualization layer for multiple infrastructure workloads.
+## Responsibilities & Implementation
 
-At a high level:
+I implemented and currently administer the Proxmox VE virtualization layer, including:
 
-```text
-External Network Infrastructure
-            │
-            ▼
-      Proxmox VE Host
-            │
-     ┌──────┴──────┐
-     │             │
- Virtual Machines  LXC Containers
-     │             │
-     └──────┬──────┘
-            │
-   Infrastructure & Business Workloads
-```
+- Provisioning and lifecycle management of VMs and LXC containers
+- CPU and memory allocation according to workload requirements
+- Virtual disk provisioning, expansion, and capacity management
+- Linux bridge and virtual network interface configuration
+- VLAN integration for segmented workload connectivity
+- Host and workload resource monitoring
+- Administrative access management with 2FA
+- Proxmox VE platform maintenance
+- Infrastructure troubleshooting across hypervisor, storage, networking, and guest layers
 
-Routing, firewalling, and broader network security functions are handled outside the Proxmox VE platform and integrate with its virtual networking layer.
+## Technical Documentation
 
-## Administration
-
-My responsibilities in this environment include:
-
-- Provisioning and maintaining virtual machines and LXC containers
-- Allocating and adjusting compute, memory, and storage resources
-- Managing Proxmox VE virtual networking
-- Integrating virtual workloads with segmented networks
-- Monitoring host and workload resource utilization
-- Managing administrative access to the hypervisor
-- Troubleshooting virtualization, networking, storage, and guest-level issues
-- Maintaining the Proxmox VE platform in a production environment
-
-## Documentation
-
-Technical documentation for this case study:
-
-- [Infrastructure Architecture](docs/architecture.md)
-- [Virtual Machine Provisioning](docs/vm-provisioning.md)
-- [Networking](docs/networking.md)
-- [Storage](docs/storage.md)
+- [Architecture](docs/architecture.md)
+- [VM Provisioning](docs/vm-provisioning.md)
+- [Virtual Networking](docs/networking.md)
+- [Storage Management](docs/storage.md)
 - [Security Hardening](docs/security-hardening.md)
 
 ## Infrastructure Evidence
 
-The following screenshots are sanitized views from the production Proxmox VE environment.
+The screenshots below are sanitized views from the production Proxmox VE environment.
 
-Company-specific identifiers, network addressing, hostnames, and sensitive configuration details have been removed or anonymized.
+### Datacenter Overview
 
-### Proxmox VE Datacenter Overview
+![Proxmox VE Datacenter](screenshots/proxmox-datacenter-overview.jpeg)
 
-![Proxmox VE Datacenter Overview](screenshots/proxmox-datacenter-overview.jpeg)
+Production Proxmox VE environment showing active workloads and host resource utilization.
 
-Datacenter-level view showing the active Proxmox VE node, virtualized workloads, resource utilization, and storage usage.
+### Resources
 
-### Proxmox VE Resources
+![Proxmox VE Resources](screenshots/proxmox-resources-overview.jpeg)
 
-![Proxmox VE Resources Overview](screenshots/proxmox-resources-overview.jpeg)
+Overview of virtual machines, LXC containers, and storage resources administered through Proxmox VE.
 
-Resource view showing virtual machines, LXC containers, and storage resources administered through Proxmox VE.
+### Virtual Machine Hardware
 
-### Virtual Machine Hardware Configuration
+![Virtual Machine Hardware](screenshots/proxmox-vm-hardware.jpeg)
 
-![Proxmox VE Virtual Machine Hardware](screenshots/proxmox-vm-hardware.jpeg)
+Example of a production VM configuration with allocated CPU, memory, virtual storage, and network resources.
 
-Example of a production virtual machine hardware configuration, including allocated CPU, memory, virtual storage, controller configuration, and virtual network interface.
+### Virtual Networking
 
-### Proxmox VE Network Configuration
+![Proxmox VE Networking](screenshots/proxmox-networking.jpeg)
 
-![Proxmox VE Network Configuration](screenshots/proxmox-networking.jpeg)
-
-Host-level virtual networking configuration showing physical interfaces, Linux VLAN interfaces, and Linux bridges used by the Proxmox VE virtualization environment.
+Production Proxmox VE networking configuration using Linux bridges and VLAN interfaces for virtual workloads.
