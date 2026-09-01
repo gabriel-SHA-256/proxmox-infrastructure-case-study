@@ -1,118 +1,128 @@
-# Proxmox VE Storage & Backup
+# Proxmox VE Storage Management
 
 ## Overview
 
-This document describes the storage administration, capacity management, and backup workflows used in my **Proxmox VE infrastructure lab**.
+This document describes storage administration within the **production Proxmox VE environment** documented in this case study.
 
-The environment includes virtual disk management, storage capacity adjustments, **Proxmox Backup Server (PBS)**, and a **TrueNAS virtual machine** used as a storage-oriented workload.
+Storage resources are managed according to the requirements of virtual machines and LXC containers, with attention to capacity allocation, workload growth, virtual disk lifecycle, and operational impact.
 
-## Storage Management
+This document focuses specifically on the **Proxmox VE storage layer**. External storage services and backup infrastructure are outside the scope of this repository.
 
-Storage resources in Proxmox VE are allocated according to the requirements of each virtual machine.
+## Storage Architecture
 
-Administration activities include:
+Proxmox VE manages multiple storage resources used by virtualized workloads.
 
-- Virtual disk provisioning
-- VM storage allocation
-- Storage utilization monitoring
-- Virtual disk expansion
-- Capacity management
-- Storage-related troubleshooting
+At a high level:
 
-Storage allocations can be adjusted as workload requirements change.
+```text
+Proxmox VE Host
+      │
+      ├── Storage Resources
+      │      │
+      │      ├── VM Disks
+      │      ├── LXC Volumes
+      │      └── Installation Media
+      │
+      └── Virtual Workloads
+             ├── Virtual Machines
+             └── LXC Containers
+```
+
+Storage resources are assigned according to workload requirements rather than using a fixed allocation model across all virtual systems.
 
 ## Virtual Disk Management
 
-Virtual disks are created and managed through Proxmox VE.
+Virtual disks are provisioned and managed through Proxmox VE throughout the VM lifecycle.
 
 Administration includes:
 
-- Defining disk capacity during VM provisioning
-- Expanding virtual disks when additional capacity is required
-- Reviewing available storage before making changes
-- Managing storage according to individual workload requirements
+- Virtual disk provisioning
+- Storage target selection
+- Capacity allocation
+- Virtual disk expansion
+- Disk reassignment when required
+- Storage utilization monitoring
+- Storage-related troubleshooting
 
-Virtual disk expansion involves both the **hypervisor layer** and the **guest operating system layer**, since additional capacity assigned in Proxmox VE must also be made available inside the guest.
+Disk capacity can be adjusted when operational requirements change without rebuilding the virtual machine.
+
+## LXC Storage
+
+LXC containers also receive dedicated storage according to the requirements of the services they host.
+
+Container storage administration includes:
+
+- Volume allocation
+- Capacity management
+- Storage resource selection
+- Expansion when required
+- Monitoring storage consumption
+
+VM and LXC storage are managed according to their individual workload characteristics.
 
 ## Capacity Management
 
-Storage capacity is reviewed to identify:
+Storage capacity is reviewed as part of ongoing infrastructure administration.
 
-- Increasing VM disk utilization
-- Workloads approaching allocated capacity
-- Available capacity for virtual disk expansion
-- Backup storage consumption
-- Storage requirements for additional workloads
+Relevant considerations include:
 
-Capacity is managed according to workload requirements rather than applying identical storage allocations to every VM.
+- Current storage utilization
+- Growth of existing virtual workloads
+- Available capacity for disk expansion
+- Requirements for new VMs or containers
+- Impact of allocation changes on the remaining storage pool
 
-## Backup Infrastructure
+The objective is to maintain sufficient capacity for current workloads while preserving room for infrastructure growth.
 
-The lab includes **Proxmox Backup Server (PBS)** as part of the backup environment.
+## Disk Expansion
 
-PBS provides a dedicated backup platform for workloads running on Proxmox VE.
+Virtual disk expansion is handled across separate infrastructure layers.
 
-The architecture separates active virtual workloads from the backup infrastructure:
+At the Proxmox VE level, additional capacity is assigned to the virtual disk.
 
-```text
-Virtual Machines
-       │
-       ▼
- Proxmox VE
-       │
-       ▼
-Proxmox Backup Server
-```
+The guest operating system is then responsible for consuming the additional capacity according to its own disk, partition, volume, and filesystem configuration.
 
-This provides a separate backup layer for virtual machines managed by Proxmox VE.
+This separation between **hypervisor storage** and **guest storage management** is considered when planning and troubleshooting disk expansion.
 
-## Backup Administration
+## Storage Allocation
 
-Backup-related administration includes:
+Different workloads receive different storage allocations depending on their function and expected growth.
 
-- VM-level backup configuration
-- Backup storage management
-- Monitoring backup capacity
-- Managing protected virtual workloads
-- Reviewing backup availability
+Storage decisions consider:
 
-The objective is to maintain usable backup copies independently from the active VM disks.
+- Workload purpose
+- Current capacity requirements
+- Expected data growth
+- Performance requirements
+- Available Proxmox VE storage resources
+- Impact on other virtualized workloads
 
-## TrueNAS Workload
+This avoids unnecessary over-allocation while allowing resources to be expanded when justified by operational demand.
 
-The environment also includes **TrueNAS running as a virtual machine on Proxmox VE**.
+## Operational Administration
 
-TrueNAS is treated as a storage-oriented workload with its own resource, disk, and network requirements.
+Storage-related administration in the environment includes:
 
-It represents a different architectural role from Proxmox Backup Server:
-
-- **Proxmox VE storage** provides storage resources for virtual machines
-- **TrueNAS** provides storage services as a virtualized workload
-- **Proxmox Backup Server** provides backup infrastructure for Proxmox workloads
-
-Keeping these roles separate makes the storage architecture easier to manage and troubleshoot.
-
-## Operational Considerations
-
-Storage changes are evaluated with attention to:
-
-- Available Proxmox storage capacity
-- Current VM disk utilization
-- Required disk expansion
-- Backup storage consumption
-- Impact on existing workloads
-- Capacity required for additional virtual machines
+- Reviewing storage consumption
+- Provisioning disks for new workloads
+- Expanding existing virtual disks
+- Managing storage assigned to VMs and containers
+- Evaluating available capacity before infrastructure changes
+- Troubleshooting storage constraints
+- Coordinating hypervisor-level storage changes with guest operating systems
 
 ## Troubleshooting
 
-Storage-related troubleshooting in the environment has included:
+Storage troubleshooting is approached by identifying the affected layer before making changes.
 
-- VM disk capacity limitations
-- Virtual disk expansion
-- Guest filesystem capacity after hypervisor-level disk expansion
-- Storage allocation issues
-- Backup storage capacity
+Relevant layers include:
 
-Troubleshooting is approached by identifying the affected layer:
+**Proxmox VE storage → virtual disk or container volume → guest operating system → workload**
 
-**Proxmox VE storage → virtual disk → guest operating system → backup infrastructure → workload**
+Issues handled at the Proxmox VE storage layer include:
+
+- Insufficient allocated capacity
+- Virtual disk expansion requirements
+- Storage resource availability
+- Workload storage allocation
+- Capacity constraints affecting virtualized systems
