@@ -1,39 +1,77 @@
-# Proxmox VE Infrastructure Lab
+# Proxmox VE Infrastructure
 
-Hands-on infrastructure project built with **Proxmox VE**, focused on virtualization, Linux virtual machines, networking, storage management, backup workflows, and infrastructure troubleshooting.
+This repository documents a **sanitized case study of a production infrastructure environment** that I implemented and administered using Proxmox VE.
 
-This repository documents the architecture, configuration decisions, administration tasks, validation procedures, and troubleshooting performed in a real Proxmox VE lab environment.
+The environment includes virtualization, Linux workloads, virtual networking, VLAN segmentation, pfSense integration, storage management, access control, and infrastructure troubleshooting.
 
-## Project Scope
+All environment-specific identifiers and sensitive configuration details have been removed or anonymized for public documentation.
 
-The environment is used to practice and document:
+## Scope
+
+The infrastructure work documented in this repository includes:
 
 - Proxmox VE administration
-- Virtual machine provisioning
-- Linux virtual machines
+- Virtual machine provisioning and lifecycle management
+- CPU, memory, and storage resource allocation
 - Virtual networking
+- Linux bridges and VLAN integration
+- pfSense integration
+- Network segmentation
 - Storage management
-- Backup and recovery
-- Resource allocation
+- Administrative access controls
 - Infrastructure troubleshooting
-- Remote administration
 
 ## Technologies
 
 - Proxmox VE
 - Linux
 - Ubuntu Server
+- Virtualization
 - Virtual Machines
 - TCP/IP Networking
+- VLANs
+- pfSense
 - SSH
 - Storage Management
-- Backup and Recovery
 
-## Repository Structure
+## Documentation
 
-```text
-docs/
-├── architecture.md
-├── vm-provisioning.md
-├── networking.md
-└── storage-backup.md
+- [`Architecture`](docs/architecture.md) — Infrastructure architecture and component organization
+- [`VM Provisioning`](docs/vm-provisioning.md) — Virtual machine creation and provisioning
+- [`Networking`](docs/networking.md) — Proxmox networking, VLANs, pfSense integration, and segmentation
+- [`Storage`](docs/storage.md) — Virtual storage and capacity management
+- [`Security Hardening`](docs/security-hardening.md) — Administrative access and security controls
+
+## Infrastructure Evidence
+
+The following screenshots are sanitized views of the infrastructure documented in this repository. Environment-specific information has been removed to preserve confidentiality.
+
+### Proxmox VE Datacenter Overview
+
+![Proxmox VE Datacenter Overview](screenshots/proxmox-datacenter-overview.jpeg)
+
+Datacenter-level view of the Proxmox VE environment, showing node health, virtual workloads, resource utilization, and storage consumption.
+
+### Proxmox VE Resources
+
+![Proxmox VE Resources Overview](screenshots/proxmox-resources-overview.jpeg)
+
+Resource tree showing the organization of virtual workloads and storage resources managed through Proxmox VE.
+
+### Virtual Machine Hardware
+
+![Proxmox VE Virtual Machine Hardware](screenshots/proxmox-vm-hardware.jpeg)
+
+Example virtual machine hardware configuration showing CPU, memory, virtual storage, controller, installation media, and virtual network interface allocation.
+
+### Proxmox VE Network Configuration
+
+![Proxmox VE Network Configuration](screenshots/proxmox-networking.jpeg)
+
+Host-level network configuration showing the integration of physical interfaces, Linux VLAN interfaces, and Linux bridges used by the virtualized infrastructure.
+
+### pfSense Network Interfaces
+
+![pfSense Network Interfaces](screenshots/pfsense-interfaces.jpeg)
+
+Sanitized pfSense interface view showing WAN, LAN, and VLAN-based network segmentation integrated with the Proxmox VE environment.
