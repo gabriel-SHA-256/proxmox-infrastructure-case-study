@@ -70,6 +70,30 @@ Technical documentation for this case study:
 
 ## Infrastructure Evidence
 
-This repository includes sanitized screenshots from the production environment as supporting evidence of the infrastructure documented in this case study.
+The following screenshots are sanitized views from the production Proxmox VE environment.
 
-Company-specific identifiers and sensitive production information have been removed from all publicly available evidence.
+Company-specific identifiers, network addressing, hostnames, and sensitive configuration details have been removed or anonymized.
+
+### Proxmox VE Datacenter Overview
+
+![Proxmox VE Datacenter Overview](screenshots/proxmox-datacenter-overview.jpeg)
+
+Datacenter-level view showing the active Proxmox VE node, virtualized workloads, resource utilization, and storage usage.
+
+### Proxmox VE Resources
+
+![Proxmox VE Resources Overview](screenshots/proxmox-resources-overview.jpeg)
+
+Resource view showing virtual machines, LXC containers, and storage resources administered through Proxmox VE.
+
+### Virtual Machine Hardware Configuration
+
+![Proxmox VE Virtual Machine Hardware](screenshots/proxmox-vm-hardware.jpeg)
+
+Example of a production virtual machine hardware configuration, including allocated CPU, memory, virtual storage, controller configuration, and virtual network interface.
+
+### Proxmox VE Network Configuration
+
+![Proxmox VE Network Configuration](screenshots/proxmox-networking.jpeg)
+
+Host-level virtual networking configuration showing physical interfaces, Linux VLAN interfaces, and Linux bridges used by the Proxmox VE virtualization environment.
