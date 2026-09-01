@@ -2,116 +2,104 @@
 
 ## Overview
 
-This document describes the standard process I use to create and provision a virtual machine in **Proxmox VE**.
+This document describes the virtual machine provisioning workflow used in the **production Proxmox VE environment** documented in this case study.
 
-The objective is to configure the required virtual hardware, install the guest operating system, and validate that the VM is ready for use.
+Virtual machines are provisioned according to workload requirements, with compute, memory, storage, networking, and guest operating system configuration defined before the workload is placed into service.
 
-## 1. Create the Virtual Machine
+## Provisioning Workflow
 
-In the Proxmox VE web interface:
+The provisioning process includes:
 
-1. Select the Proxmox node.
-2. Click **Create VM**.
-3. Define the VM ID and hostname.
-4. Select the operating system installation ISO.
+1. Define the workload requirements
+2. Select the appropriate compute and memory allocation
+3. Configure virtual storage
+4. Configure the virtual network interface
+5. Deploy the guest operating system
+6. Apply workload-specific guest configuration
+7. Validate resources, connectivity, and service readiness
+8. Adjust resources when operational requirements change
 
-## 2. Configure Virtual Hardware
+## Resource Allocation
 
-Configure the VM according to the workload requirements.
+CPU and memory are allocated according to the expected workload rather than using a fixed VM template for every system.
 
-### CPU
+Relevant considerations include:
 
-Define:
+- Expected CPU utilization
+- Memory requirements
+- Workload growth
+- Resource availability on the Proxmox VE host
+- Impact on other virtualized workloads
 
-- Number of CPU sockets
-- Number of CPU cores
-- CPU type when required
+Resources can be adjusted later as operational requirements change.
 
-### Memory
+## Virtual Storage
 
-Allocate RAM based on the expected workload.
+Virtual disks are provisioned according to workload capacity requirements.
 
-Memory can be increased or reduced later if requirements change.
+Storage configuration includes:
 
-### Storage
+- Storage target selection
+- Virtual disk sizing
+- Controller configuration
+- Capacity planning
+- Disk expansion when required
 
-Create the virtual disk and define:
+Storage allocation is reviewed independently for each workload to avoid unnecessary over-allocation while maintaining sufficient operational capacity.
 
-- Storage location
-- Disk size
-- Disk controller
-- Disk format and options when required
+## Virtual Networking
 
-### Network
+Each VM is connected to the appropriate Proxmox VE virtual networking configuration.
 
-Attach a virtual network interface to the appropriate Proxmox bridge.
+Network provisioning includes:
 
-Typical configuration includes:
+- Virtual network interface assignment
+- Linux bridge association
+- Workload-specific network segment selection
+- VLAN integration when required
 
-- Bridge selection
-- VirtIO network adapter
-- Firewall option when required
+Routing, firewall policy, and broader network security remain outside the virtualization layer.
 
-## 3. Review the Configuration
+## Guest Operating System Deployment
 
-Before creating the VM, review:
+After the virtual hardware is defined, the guest operating system is deployed and configured according to the workload requirements.
 
-- VM ID
-- Operating system
-- CPU allocation
-- Memory allocation
-- Virtual disk
-- Network interface
+Guest preparation can include:
 
-After validation, create the virtual machine.
-
-## 4. Install the Guest Operating System
-
-Start the VM and open the Proxmox console.
-
-Boot from the attached ISO and complete the operating system installation.
-
-After installation:
-
-1. Remove or detach the installation media if necessary.
-2. Configure the boot order.
-3. Restart the VM.
-4. Confirm that the guest operating system boots correctly.
-
-## 5. Configure the Guest
-
-After the operating system is running, complete the required guest configuration.
-
-Depending on the workload, this can include:
-
-- Hostname configuration
+- System identity and hostname configuration
 - Network configuration
-- Administrative user configuration
-- Remote access
+- Administrative access
 - Storage preparation
-- Required services and packages
+- Required infrastructure or application services
 
-## 6. Validate the VM
+The guest operating system is treated as a separate administration layer from the Proxmox VE hypervisor.
 
-Before placing the VM into use, verify:
+## Validation
 
-- VM boots successfully
-- CPU resources are available
-- Allocated memory is available
-- Virtual disk is detected
-- Network interface is operational
-- Network connectivity is working
-- Required services are running
+Before a VM is considered ready for use, the relevant infrastructure layers are validated.
 
-## 7. Resource Adjustment
+Validation includes:
 
-CPU, memory, storage, and other virtual hardware can be adjusted later when workload requirements change.
+- Successful VM startup
+- Correct CPU and memory allocation
+- Virtual disk availability
+- Network interface operation
+- Connectivity to required network resources
+- Guest operating system availability
+- Required workload services operating as expected
 
-Typical VM administration tasks include:
+## Lifecycle Management
 
-- Increasing CPU or memory
-- Expanding virtual disks
-- Adding or removing virtual devices
-- Modifying network interfaces
-- Changing boot configuration
-- Using the Proxmox console for troubleshooting
+Provisioning does not end when the VM is initially created.
+
+Ongoing VM administration includes:
+
+- CPU and memory adjustments
+- Virtual disk expansion
+- Virtual hardware changes
+- Network interface changes
+- Console-based recovery or troubleshooting
+- Resource utilization review
+- Workload decommissioning when no longer required
+
+Changes are evaluated according to the requirements and operational impact of the individual workload.
