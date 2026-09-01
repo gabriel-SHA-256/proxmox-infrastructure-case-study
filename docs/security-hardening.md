@@ -2,82 +2,98 @@
 
 ## Overview
 
-This document describes security measures and administrative access controls applied in my **Proxmox VE infrastructure lab**.
+This document describes security controls applied to the **production Proxmox VE environment** documented in this case study.
 
-The focus is on protecting hypervisor administration, reducing unnecessary privileged access, separating infrastructure workloads, and using network controls to limit access between environments.
+The focus is on protecting hypervisor administration, controlling privileged access, maintaining a recovery path for administrative access, separating the virtualization host from guest workloads, and maintaining the platform securely.
 
 ## Administrative Access
 
-Administrative access to Proxmox VE has been configured with additional authentication controls.
+Administrative access to Proxmox VE is protected through controlled authentication mechanisms.
 
-The environment has included:
+Controls implemented in the environment include:
 
-- Two-factor authentication (2FA) for Proxmox VE access
+- Two-factor authentication (2FA) for Proxmox VE administrative access
 - Restricted use of the root account for routine administration
-- Dedicated administrative access to the Proxmox VE management interface
-- Local console access as a recovery path for administrative access issues
+- Controlled access to the Proxmox VE management interface
+- Local console access as an administrative recovery path
 
-These controls reduce reliance on a single unrestricted administrative account.
+These measures reduce unnecessary reliance on unrestricted privileged access to the hypervisor.
 
 ## Privileged Access
 
-The root account is not intended for normal day-to-day administration.
+Routine administration is performed without relying on direct root access whenever elevated privileges are not required.
 
-Privileged access is reserved for tasks that specifically require elevated permissions, while routine management is performed through controlled administrative access.
+Privileged access is reserved for operations that specifically require it.
 
-This reduces unnecessary use of unrestricted privileges on the hypervisor.
+This approach keeps day-to-day administration separated from unrestricted hypervisor-level privileges.
+
+## Two-Factor Authentication
+
+Two-factor authentication is enabled for administrative access to Proxmox VE.
+
+This adds an additional authentication layer beyond account credentials and protects access to the virtualization management interface.
+
+Authentication controls are treated independently from guest operating system access.
 
 ## Administrative Recovery
 
-Administrative recovery has been performed directly through the **local Proxmox VE console** when remote authentication access was unavailable.
+The environment maintains **local console access** as a recovery path for administrative access issues.
 
-Using local console access provides a recovery path without depending on an externally exposed recovery mechanism.
-
-## Network Segmentation
-
-The Proxmox environment is integrated with a segmented network architecture using **pfSense and VLANs**.
-
-Network segmentation is used to separate infrastructure traffic and control communication between network segments.
-
-pfSense provides:
-
-- Firewall policy enforcement
-- Routing between network segments
-- VLAN gateway control
-- Access control between infrastructure networks
-
-This allows virtualized workloads and infrastructure services to operate within defined network boundaries.
+This recovery method has been used when normal administrative authentication was unavailable, allowing access to be restored directly from the Proxmox VE host without depending on remote recovery mechanisms.
 
 ## Hypervisor and Workload Separation
 
-Application and infrastructure workloads are deployed inside virtual machines instead of directly on the Proxmox VE host whenever appropriate.
+Infrastructure and application workloads are hosted inside **virtual machines and LXC containers** rather than being deployed directly on the Proxmox VE host when appropriate.
 
-This keeps the hypervisor focused on virtualization responsibilities and limits direct interaction between guest workloads and the underlying host.
+This maintains a separation between:
 
-The separation provides distinct administrative boundaries between:
+```text
+Proxmox VE Hypervisor
+        │
+        ├── Virtual Machines
+        └── LXC Containers
+                │
+             Workloads
+```
 
-**Proxmox VE Host → Virtual Machines → Workloads**
+The hypervisor remains focused on virtualization and infrastructure management, while workload administration remains within the corresponding guest environment.
 
-## Management Practices
+## Management Plane Separation
 
-Security-related administration of the Proxmox VE environment includes:
+Proxmox VE administration is treated separately from guest workload administration.
 
-- Maintaining the hypervisor through supported repositories and system updates
+This distinction reduces unnecessary interaction between:
+
+- Hypervisor administration
+- Virtual machine administration
+- LXC container administration
+- Workload-level administration
+
+Administrative actions are performed at the appropriate infrastructure layer rather than using the hypervisor as a general-purpose workload host.
+
+## Platform Maintenance
+
+Security administration also includes maintaining the Proxmox VE platform and reviewing administrative access following infrastructure or authentication changes.
+
+Operational practices include:
+
+- Maintaining the Proxmox VE platform through supported repositories
+- Applying platform updates as part of infrastructure maintenance
 - Reviewing administrative access after authentication changes
-- Separating hypervisor administration from guest workload administration
-- Limiting direct privileged access
-- Maintaining a local administrative recovery path
-- Using firewall and VLAN controls at the network layer
+- Maintaining separation between hypervisor and guest workloads
+- Preserving a local administrative recovery path
 
 ## Security Scope
 
-Security in this lab is treated across multiple layers:
+The security controls documented in this case study are limited to the **Proxmox VE virtualization layer**.
 
-- **Identity and authentication** — administrative accounts and 2FA
-- **Privilege management** — restricted root usage
-- **Hypervisor isolation** — separation between Proxmox VE and guest workloads
-- **Network security** — pfSense firewall policies and VLAN segmentation
-- **Administrative recovery** — local console access
-- **Platform maintenance** — hypervisor maintenance and update management
+They cover:
 
-These controls are applied as part of the overall infrastructure architecture rather than as isolated security features.
+- **Authentication** — administrative accounts and two-factor authentication
+- **Privilege management** — restricted routine use of root access
+- **Management plane protection** — controlled hypervisor administration
+- **Workload isolation** — separation between the hypervisor, VMs, and LXC containers
+- **Administrative recovery** — local console recovery path
+- **Platform maintenance** — maintenance of the Proxmox VE host
+
+Corporate firewall policy, external network security, VPN infrastructure, and broader network segmentation are intentionally outside the scope of this repository.
