@@ -2,104 +2,68 @@
 
 ## Overview
 
-This document describes the virtual machine provisioning workflow used in the **production Proxmox VE environment** documented in this case study.
+This document summarizes how I provision and manage virtual machines in the **production Proxmox VE environment** documented in this case study.
 
-Virtual machines are provisioned according to workload requirements, with compute, memory, storage, networking, and guest operating system configuration defined before the workload is placed into service.
+VMs are configured according to workload requirements, with compute, memory, storage, networking, and guest operating system resources defined before being placed into service.
 
-## Provisioning Workflow
+## What I Configure
 
-The provisioning process includes:
+For each virtual machine, I define and manage:
 
-1. Define the workload requirements
-2. Select the appropriate compute and memory allocation
-3. Configure virtual storage
+- CPU allocation
+- Memory allocation
+- Virtual disk capacity
+- Storage target
+- Virtual network interface
+- Linux bridge association
+- VLAN integration when required
+- Guest operating system
+- Boot and virtual hardware configuration
+
+## Provisioning Process
+
+My provisioning workflow includes:
+
+1. Define workload requirements
+2. Create the VM in Proxmox VE
+3. Allocate CPU, memory, and storage
 4. Configure the virtual network interface
 5. Deploy the guest operating system
-6. Apply workload-specific guest configuration
-7. Validate resources, connectivity, and service readiness
-8. Adjust resources when operational requirements change
+6. Apply workload-specific configuration
+7. Validate resources and connectivity
+8. Place the VM into operation
 
-## Resource Allocation
+## Resource Management
 
-CPU and memory are allocated according to the expected workload rather than using a fixed VM template for every system.
+VM resources are allocated according to workload requirements rather than using the same configuration for every system.
 
-Relevant considerations include:
+During the VM lifecycle, I adjust resources when necessary, including:
 
-- Expected CPU utilization
-- Memory requirements
-- Workload growth
-- Resource availability on the Proxmox VE host
-- Impact on other virtualized workloads
+- CPU
+- Memory
+- Virtual disk capacity
+- Network interfaces
+- Virtual hardware
 
-Resources can be adjusted later as operational requirements change.
-
-## Virtual Storage
-
-Virtual disks are provisioned according to workload capacity requirements.
-
-Storage configuration includes:
-
-- Storage target selection
-- Virtual disk sizing
-- Controller configuration
-- Capacity planning
-- Disk expansion when required
-
-Storage allocation is reviewed independently for each workload to avoid unnecessary over-allocation while maintaining sufficient operational capacity.
-
-## Virtual Networking
-
-Each VM is connected to the appropriate Proxmox VE virtual networking configuration.
-
-Network provisioning includes:
-
-- Virtual network interface assignment
-- Linux bridge association
-- Workload-specific network segment selection
-- VLAN integration when required
-
-Routing, firewall policy, and broader network security remain outside the virtualization layer.
-
-## Guest Operating System Deployment
-
-After the virtual hardware is defined, the guest operating system is deployed and configured according to the workload requirements.
-
-Guest preparation can include:
-
-- System identity and hostname configuration
-- Network configuration
-- Administrative access
-- Storage preparation
-- Required infrastructure or application services
-
-The guest operating system is treated as a separate administration layer from the Proxmox VE hypervisor.
-
-## Validation
-
-Before a VM is considered ready for use, the relevant infrastructure layers are validated.
-
-Validation includes:
-
-- Successful VM startup
-- Correct CPU and memory allocation
-- Virtual disk availability
-- Network interface operation
-- Connectivity to required network resources
-- Guest operating system availability
-- Required workload services operating as expected
-
-## Lifecycle Management
-
-Provisioning does not end when the VM is initially created.
+## Administration
 
 Ongoing VM administration includes:
 
-- CPU and memory adjustments
+- VM lifecycle management
+- Resource adjustments
 - Virtual disk expansion
-- Virtual hardware changes
 - Network interface changes
-- Console-based recovery or troubleshooting
-- Resource utilization review
-- Workload decommissioning when no longer required
+- Console access when required
+- Guest-level troubleshooting
+- Resource utilization monitoring
 
-Changes are evaluated according to the requirements and operational impact of the individual workload.
+## Validation
+
+Before a VM is considered ready for use, I verify:
+
+- Successful startup
+- Correct resource allocation
+- Storage availability
+- Network connectivity
+- Guest operating system availability
+- Required workload services
