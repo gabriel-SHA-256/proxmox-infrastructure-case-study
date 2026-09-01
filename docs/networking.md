@@ -2,108 +2,64 @@
 
 ## Overview
 
-This document describes the **virtual networking layer of a production Proxmox VE environment** that I implemented and currently administer.
+This document summarizes how I configure and manage virtual networking in the **production Proxmox VE environment** documented in this case study.
 
-The Proxmox VE host provides network connectivity for virtual machines and LXC containers through Linux bridges, virtual network interfaces, and VLAN integration.
+The Proxmox VE host provides the virtualization-side network layer for virtual machines and LXC containers, while routing, firewalling, and broader network security are handled outside the hypervisor.
 
-The broader corporate network, routing, firewalling, and external network security infrastructure are intentionally outside the scope of this repository.
+## What I Configure
 
-## Network Architecture
+Within Proxmox VE, I manage:
 
-```text
-        External Network Infrastructure
-                    │
-                    │
-          Physical Network Interface
-                    │
-                    ▼
-         ┌─────────────────────┐
-         │   Proxmox VE Host   │
-         │                     │
-         │   Linux Bridges     │
-         │         │           │
-         │   VLAN Interfaces   │
-         │         │           │
-         │   ┌─────┴─────┐     │
-         │   │           │     │
-         │  VMs      LXC Containers
-         │                     │
-         └─────────────────────┘
-```
+- Linux bridges
+- Virtual network interfaces
+- VLAN interfaces
+- VLAN-aware networking
+- Network attachment for VMs and LXC containers
+- Workload connectivity to segmented networks
 
-This diagram intentionally represents only the Proxmox VE networking layer and its connection to the external network infrastructure.
+## Network Integration
 
-## Linux Bridges
+Virtual workloads are connected to the appropriate network segment according to their infrastructure requirements.
 
-Linux bridges are used to connect virtual workloads to the physical network.
-
-They provide the network layer between:
-
-**Physical interface → Proxmox VE → Virtual Machine / LXC Container**
-
-Bridge configuration is managed according to the connectivity requirements of the workloads hosted on the Proxmox VE server.
-
-## Virtual Network Interfaces
-
-Virtual machines and LXC containers receive virtual network interfaces connected to the appropriate Proxmox VE networking configuration.
-
-Administration includes:
-
-- Virtual network interface assignment
-- Bridge association
-- Workload-specific network connectivity
-- Interface changes during VM or container lifecycle management
-- Troubleshooting connectivity between virtual workloads and the external network
+The Proxmox VE networking layer integrates virtual machines and containers with the external network infrastructure without placing routing or firewall responsibilities on the hypervisor.
 
 ## VLAN Integration
 
-The production environment uses VLAN segmentation, with VLAN connectivity integrated into the Proxmox VE networking layer.
+VLAN connectivity is used when workloads require network segmentation.
 
-Proxmox-side configuration includes:
+My Proxmox-side responsibilities include:
 
-- VLAN interfaces
-- VLAN-aware virtual networking
-- Association between VLAN connectivity and virtual workloads
-- Integration between the hypervisor networking layer and the external segmented network
+- VLAN interface configuration
+- Bridge integration
+- Virtual interface assignment
+- Workload network attachment
+- Validation of segmented connectivity
 
-VLAN routing and network security policy are handled outside Proxmox VE.
+## Administration
 
-## Network Segmentation
+Ongoing networking administration includes:
 
-Virtual workloads can be connected to different network segments according to their infrastructure requirements.
+- Managing Linux bridges
+- Adjusting VM and LXC network interfaces
+- Maintaining VLAN integration
+- Reviewing workload network attachment
+- Troubleshooting Proxmox-side connectivity issues
+- Coordinating networking changes with workload requirements
 
-This allows the virtualization layer to support segmented connectivity without requiring all virtual machines and containers to share the same network context.
+## Troubleshooting
 
-The Proxmox VE host is responsible for providing the appropriate virtual network path, while external infrastructure controls routing and communication between network segments.
+When connectivity issues occur, I isolate the affected layer before making changes.
 
-## Production Troubleshooting
-
-Networking work in this environment has included troubleshooting issues across the Proxmox VE virtual networking layer.
-
-One production troubleshooting case involved an incorrect **VLAN interface configuration on the Proxmox VE host**.
-
-The issue was isolated to the Proxmox networking layer, the VLAN interface configuration was corrected, and tagged traffic between the host and the external network infrastructure was successfully restored.
-
-Other Proxmox-side networking troubleshooting includes:
+Proxmox-side troubleshooting includes:
 
 - Virtual interface configuration
 - Linux bridge configuration
-- VLAN connectivity
-- Workload network attachment
-- Connectivity between virtual workloads and external infrastructure
+- VLAN attachment
+- Workload network assignment
+- Connectivity between virtual workloads and the external network infrastructure
 
-## Administrative Scope
+## Scope
 
-Networking administration documented in this repository is limited to the **Proxmox VE virtualization layer**.
+This document covers only the **Proxmox VE virtual networking layer**.
 
-The following are intentionally outside the scope of this case study:
-
-- Corporate firewall configuration
-- External routing configuration
-- Complete VLAN topology
-- DNS architecture
-- Physical network topology
-- Remote-access infrastructure
-- Firewall policies and rules
-
-This separation keeps the case study focused on the networking responsibilities directly associated with Proxmox VE.
+External firewall policies, routing configuration, physical network topology, DNS infrastructure, and remote-access systems are outside the scope of this repository.
