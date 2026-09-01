@@ -1,126 +1,153 @@
-# Proxmox VE Lab Architecture
+# Proxmox VE Production Architecture
 
 ## Overview
 
-This project documents a self-hosted virtualization environment built with **Proxmox VE**.
+This document presents a **sanitized representation of a production Proxmox VE environment** that I implemented and currently administer.
 
-The lab is used for virtual machine administration, Linux server workloads, storage services, networking, infrastructure testing, and troubleshooting.
+Proxmox VE provides the virtualization layer for business and infrastructure workloads running as virtual machines and LXC containers.
 
-The environment was designed to provide hands-on experience with virtualization and the integration between hypervisor, virtual machines, storage, and network services.
+The architecture separates compute, virtual networking, storage, workload administration, and external network integration while keeping sensitive production details outside the public documentation.
 
 ## Architecture
 
 ```text
-Network / Internet
-        │
-        │
-     pfSense
-        │
-        │
-   Local Network
-        │
-        │
-┌─────────────────────┐
-│   Proxmox VE Host   │
-│                     │
-│  Virtual Networking │
-│        │            │
-│        ├── VM       │
-│        ├── VM       │
-│        ├── TrueNAS  │
-│        └── Linux    │
-│            Servers  │
-│                     │
-│      Storage        │
-└─────────────────────┘
+                 External Network Infrastructure
+                            │
+                            │
+                  ┌─────────▼─────────┐
+                  │   Proxmox VE Host │
+                  │                   │
+                  │  Virtual Network  │
+                  │  ├─ Linux Bridges│
+                  │  └─ VLAN Interfaces
+                  │         │         │
+                  │   ┌─────┴─────┐   │
+                  │   │           │   │
+                  │  VMs         LXC  │
+                  │   │        Containers
+                  │   │           │   │
+                  │   └─────┬─────┘   │
+                  │         │         │
+                  │ Infrastructure &  │
+                  │ Business Workloads│
+                  │                   │
+                  │      Storage      │
+                  └───────────────────┘
 ```
+
+The diagram intentionally represents only the Proxmox VE layer and its direct integration points. The complete corporate network topology is outside the scope of this repository.
 
 ## Proxmox VE Host
 
-The physical server runs **Proxmox VE** as the main virtualization platform.
+The physical server runs **Proxmox VE** as the production virtualization platform.
 
-The host is responsible for:
+The host provides:
 
 - Virtual machine lifecycle management
-- CPU and memory allocation
+- LXC container lifecycle management
+- CPU and memory resource allocation
 - Virtual disk management
 - Virtual networking
 - Storage allocation
-- VM console access
+- Console access
 - Resource monitoring
+- Administrative control of virtualized workloads
 
 ## Virtual Machines
 
-Multiple virtual machines can be deployed according to the requirements of each workload.
+Virtual machines are provisioned according to the technical requirements of each workload.
 
-Examples used in the lab include:
+VM administration includes:
 
-- Linux server virtual machines
-- Infrastructure service workloads
-- TrueNAS
-- Test and lab environments
+- Virtual hardware configuration
+- CPU and memory allocation
+- Virtual disk management
+- Network interface configuration
+- Guest operating system deployment
+- Resource adjustment
+- Lifecycle management
+- Infrastructure troubleshooting
 
-Each VM receives its own virtual hardware configuration, including CPU, memory, storage, and network interfaces.
+The VM provisioning workflow is documented separately in [`vm-provisioning.md`](vm-provisioning.md).
+
+## LXC Containers
+
+Proxmox VE also hosts **LXC containers used for infrastructure services**.
+
+Containers are managed independently from virtual machines and receive workload-specific compute, storage, and network resources.
+
+Container administration includes:
+
+- Resource allocation
+- Storage assignment
+- Virtual network configuration
+- Service availability
+- Lifecycle management
+- Resource monitoring
+
+Specific internal services are intentionally not enumerated in the public architecture documentation.
 
 ## Virtual Networking
 
-Proxmox VE virtual networking connects the virtual machines to the physical network infrastructure.
+Proxmox VE provides the virtualization-side network layer for VMs and LXC containers.
 
-The environment has been used with:
+The environment includes:
 
 - Linux bridges
 - Virtual network interfaces
-- TCP/IP networking
-- VLAN-based network segmentation
-- pfSense routing and firewall services
+- VLAN interfaces
+- Segmented network connectivity
+- Integration with external network infrastructure
 
-Detailed network configuration is documented separately in `networking.md`.
+Routing, firewall policy, and broader network security functions are handled outside the Proxmox VE platform.
+
+This separation maintains a clear boundary between the **virtualization layer** and the **external network/security layer**.
+
+Detailed Proxmox networking documentation is available in [`networking.md`](networking.md).
 
 ## Storage
 
-Storage is allocated and managed through Proxmox VE according to the requirements of each virtual machine.
+Storage resources are managed through Proxmox VE and allocated according to workload requirements.
 
-The environment includes experience with:
+Storage administration includes:
 
-- Virtual disk allocation
-- VM storage management
-- Disk capacity adjustments
-- Storage-oriented virtual machines such as TrueNAS
+- VM and container disk allocation
+- Capacity management
+- Virtual disk expansion
+- Storage utilization monitoring
+- Workload-specific storage allocation
+- Storage-related troubleshooting
 
-Storage and backup procedures are documented separately in `storage-backup.md`.
+Storage architecture is documented separately in [`storage.md`](storage.md).
 
 ## Administration
 
-The environment is administered through the Proxmox VE management interface and guest operating system administration tools.
+Operational administration of the environment includes:
 
-Typical activities include:
+- Provisioning and maintaining VMs and LXC containers
+- Adjusting compute, memory, and storage resources
+- Managing virtual networking
+- Monitoring host and workload resource utilization
+- Managing virtual disks and network interfaces
+- Accessing workload consoles when required
+- Troubleshooting issues across the hypervisor and guest layers
+- Maintaining the Proxmox VE platform in production
 
-- Creating and removing virtual machines
-- Adjusting CPU and memory
-- Managing virtual disks
-- Configuring virtual network interfaces
-- Accessing VM consoles
-- Monitoring resource utilization
-- Troubleshooting infrastructure issues
+## Administrative Security
 
-## Security & Administrative Access
+Administrative access to the Proxmox VE platform is separated from normal guest workload administration.
 
-Administrative access to the Proxmox VE environment follows basic separation and access-control practices.
+Controls implemented in the environment include:
 
-The lab has included:
+- Two-factor authentication for Proxmox VE administrative access
+- Restricted use of privileged accounts for routine administration
+- Local console access as an administrative recovery path
+- Separation between the hypervisor and guest workloads
 
-- Two-factor authentication (2FA) for Proxmox VE administrative access
-- Restricted use of the root account for routine administration
-- Local console access for administrative recovery
-- Separation between the Proxmox VE hypervisor and workloads running inside virtual machines
-- Authenticated SSH access for remote administration of Linux guests
+Security controls are documented separately in [`security-hardening.md`](security-hardening.md).
 
-Security-specific configuration and hardening are documented separately from the general architecture.
+## Scope
 
-## Documentation
+This case study intentionally documents the **Proxmox VE virtualization layer only**.
 
-This repository separates the main infrastructure topics into dedicated documents:
-
-- [`vm-provisioning.md`](vm-provisioning.md) — Virtual machine creation and provisioning
-- `networking.md` — Virtual networking, VLANs, routing, and connectivity
-- `storage-backup.md` — Storage management and backup workflows
+External firewall platforms, corporate network architecture, internal service topology, remote-access implementation, and company-specific infrastructure details are outside the scope of this repository.
