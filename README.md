@@ -1,4 +1,7 @@
-# Proxmox VE Infrastructure Case Study
+## In progress.......
+
+<br>
+## Proxmox VE Infrastructure Case Study
 
 > This repository is a sanitized case study based on a **production Proxmox VE environment** that I implemented and currently administer. Company-specific identifiers, network addressing, credentials, hostnames, and sensitive configuration details have been removed or anonymized.
 
